@@ -1,168 +1,153 @@
 // Organizador de tareas
-
 const organizadorDeTareas = {
   tareas: [],
-  tareasCompletadas: [],
 
-  // Metodo para agregar una nueva tarea al arreglo
-
+  // Método para agregar una nueva tarea al arreglo
   agregarTarea: function (nuevaTarea) {
-    if (this.tareas.includes(nuevaTarea)) {
-      alert("La tarea ya está en la lista de tareas pendientes.")
+    if (nuevaTarea.trim() === "") {
+      // Verifica si la tarea está vacía
+      alert("No se puede agregar una tarea vacía.");
     } else {
-      this.tareas.push(nuevaTarea)
-      alert("Tarea agregada exitosamente.")
+      // Crea un objeto de tarea y lo agrega al arreglo
+      this.tareas.push({
+        id: this.tareas.length + 1, // Genera un ID único basado en la longitud del arreglo
+        nombre: nuevaTarea,
+        estado: "pendiente",
+      });
+      alert("Tarea agregada exitosamente.");
     }
   },
 
-  // Metodo para mostrar las tareas pendientes en un cuadro de dialogo alert
-
+  // Método para mostrar las tareas pendientes en un cuadro de diálogo de alerta
   mostrarTareasPendientes: function () {
-    let mensaje = "Lista de tareas pendientes:\n"
-    if (this.tareas.length === 0) {
-      mensaje += "¡A relajarse! ¡Estás libre de tareas pendientes!"
+    let mensaje = "Lista de tareas pendientes:\n";
+    const tareasPendientes = this.tareas.filter(
+      (tarea) => tarea.estado === "pendiente"
+    ); // Filtra las tareas por estado "pendiente"
+
+    if (tareasPendientes.length === 0) {
+      mensaje += "No hay tareas pendientes.";
     } else {
-      this.tareas.forEach(function (tarea, index) {
-        mensaje += (index + 1) + ". " + tarea + "\n"
-      })
+      tareasPendientes.forEach(function (tarea) {
+        mensaje += `${tarea.id}. ${tarea.nombre}\n`;
+      });
     }
-    alert(mensaje)
+    alert(mensaje);
   },
 
-  // Metodo para marcar una tarea como completada
-
-  marcarComoCompletada: function (index) {
-    if (index >= 0 && index < this.tareas.length) {
-      const tareaCompletada = this.tareas.splice(index, 1)[0]
-      this.tareasCompletadas.push("* " + tareaCompletada)
-      alert("Tarea marcada como completada.")
-    } else {
-      alert("Número de tarea inválido.")
-    }
-  },
-
-  // Metodo para eliminar una tarea
-
-  eliminarTarea: function (index) {
-    if (index >= 0 && index < this.tareas.length) {
-      this.tareas.splice(index, 1)
-      alert("Tarea eliminada.")
-    } else {
-      alert("Número de tarea inválido.")
-    }
-  },
-
-  // Metodo para mostrar las tareas completadas
-
-  mostrarTareasCompletadas: function () {
-    let completadas = this.tareasCompletadas
-    if (completadas.length === 0) {
-      alert("No hay tareas completadas.")
-    } else {
-      let mensaje = "Tareas completadas:\n"
-      completadas.forEach(function (tarea, index) {
-        mensaje += (index + 1) + ". " + tarea + "\n"
-      })
-      alert(mensaje)
-    }
-  }
-}
-
-// Funcion para mostrar el mensaje de bienvenida
-
-function mostrarMensajeDeBienvenida() {
-  const mensaje = "¡Bienvenido al organizador de tareas!"
-  alert(mensaje)
-}
-
-// Mostrar mensaje de bienvenida al usuario
-
-mostrarMensajeDeBienvenida()
-
-// Objeto de las opciones y las funciones correspondientes
-
-const opciones = {
-
-  "1": {
-    descripcion: "Agregar tarea",
-    funcion: function () {
-      const nuevaTarea = prompt("Ingrese una nueva tarea:")
-      if (nuevaTarea !== null && nuevaTarea !== "") {
-        organizadorDeTareas.agregarTarea(nuevaTarea)
+  // Método para marcar una tarea como completada
+  marcarComoCompletada: function (id) {
+    const tarea = this.tareas.find((tarea) => tarea.id === id); // Busca la tarea por su ID
+    if (tarea) {
+      if (tarea.estado === "completada") {
+        alert("Esta tarea ya ha sido completada.");
       } else {
-        alert("No se agregó ninguna tarea.")
+        tarea.estado = "completada";
+        alert("Tarea marcada como completada.");
       }
-      mostrarOpciones()
+    } else {
+      alert("No se encontró ninguna tarea con ese ID.");
     }
   },
 
-  "2": {
-    descripcion: "Ver lista de tareas pendientes",
-    funcion: function () {
-      organizadorDeTareas.mostrarTareasPendientes()
-      mostrarOpciones()
+  // Método para eliminar una tarea
+  eliminarTarea: function (id) {
+    const indice = this.tareas.findIndex((tarea) => tarea.id === id); // Busca el índice de la tarea por su ID
+    if (indice !== -1) {
+      this.tareas.splice(indice, 1); // Elimina la tarea del arreglo
+      alert("Tarea eliminada.");
+    } else {
+      alert("No se encontró ninguna tarea con ese ID.");
     }
+  },
+
+  // Método para mostrar las tareas completadas
+  mostrarTareasCompletadas: function () {
+    const tareasCompletadas = this.tareas.filter(
+      (tarea) => tarea.estado === "completada"
+    ); // Filtra las tareas por estado "completada"
+
+    let mensaje = "Tareas completadas:\n";
+    if (tareasCompletadas.length === 0) {
+      mensaje += "No hay tareas completadas.";
+    } else {
+      tareasCompletadas.forEach(function (tarea) {
+        mensaje += `${tarea.id}. ${tarea.nombre}\n`;
+      });
+    }
+    alert(mensaje);
   },
   
-  "3": {
-    descripcion: "Marcar tarea como completada",
-    funcion: function () {
-      organizadorDeTareas.mostrarTareasPendientes()
-      const tareaCompletada = parseInt(prompt("Ingrese el número de la tarea completada:"))
-      if (!isNaN(tareaCompletada) && tareaCompletada > 0 && tareaCompletada <= organizadorDeTareas.tareas.length) {
-        organizadorDeTareas.marcarComoCompletada(tareaCompletada - 1)
-      } else {
-        alert("Número de tarea inválido.")
-      }
-      mostrarOpciones()
-    }
+  // Método para contar la cantidad total de tareas pendientes
+  contarTareasPendientes: function () {
+    const tareasPendientes = this.tareas.filter(
+      (tarea) => tarea.estado === "pendiente"
+    ); // Filtra las tareas por estado "pendiente"
+    
+    return tareasPendientes.length;
   },
-  "4": {
-    descripcion: "Mostrar tareas completadas",
-    funcion: function () {
-      organizadorDeTareas.mostrarTareasCompletadas()
-      mostrarOpciones()
-    }
+  
+  // Método para contar la cantidad total de tareas completadas
+  contarTareasCompletadas: function () {
+    const tareasCompletadas = this.tareas.filter(
+      (tarea) => tarea.estado === "completada"
+    ); // Filtra las tareas por estado "completada"
+    
+    return tareasCompletadas.length;
   },
-  "5": {
-    descripcion: "Eliminar tarea",
-    funcion: function () {
-      organizadorDeTareas.mostrarTareasPendientes()
-      const tareaEliminar = parseInt(prompt("Ingrese el número de la tarea a eliminar:"))
-      if (!isNaN(tareaEliminar) && tareaEliminar > 0 && tareaEliminar <= organizadorDeTareas.tareas.length) {
-        organizadorDeTareas.eliminarTarea(tareaEliminar - 1)
-      } else {
-        alert("Número de tarea inválido.")
-      }
-      mostrarOpciones()
-    }
-  },
-  "6": {
-    descripcion: "Salir",
-    funcion: function () {
-      alert("Gracias por utilizar el organizador de tareas. ¡Hasta luego!")
-    }
-  }
+};
+
+// Función para mostrar el mensaje de bienvenida
+function mostrarMensajeDeBienvenida() {
+  alert("¡Bienvenido al Organizador de Tareas!");
 }
 
-// Funcion para mostrar las opciones al usuario
-
+// Función para mostrar las opciones al usuario
 function mostrarOpciones() {
-  let mensaje = "Opciones:\n"
-  for (const opcion in opciones) {
-    mensaje += opcion + ". " + opciones[opcion].descripcion + "\n"
-  }
+  let opcion;
+  do {
+    const totalPendientes = organizadorDeTareas.contarTareasPendientes();
+    const totalCompletadas = organizadorDeTareas.contarTareasCompletadas();
+    
+    opcion = prompt(
+      `Opciones:\n\n` +
+        `Tareas pendientes: ${totalPendientes}\n` +
+        `Tareas completadas: ${totalCompletadas}\n\n` +
+        "1. Agregar tarea\n" +
+        "2. Ver lista de tareas pendientes\n" +
+        "3. Marcar tarea como completada\n" +
+        "4. Mostrar tareas completadas\n" +
+        "5. Eliminar tarea\n" +
+        "6. Salir"
+    );
 
-  const opcionSeleccionada = prompt(mensaje)
-
-  if (opciones[opcionSeleccionada]) {
-    opciones[opcionSeleccionada].funcion()
-  } else {
-    alert("Opción inválida. Por favor, seleccione una opción válida.")
-    mostrarOpciones()
-  }
+    if (opcion === "1") {
+      const nuevaTarea = prompt("Ingrese la nueva tarea:");
+      organizadorDeTareas.agregarTarea(nuevaTarea);
+    } else if (opcion === "2") {
+      organizadorDeTareas.mostrarTareasPendientes();
+    } else if (opcion === "3") {
+      organizadorDeTareas.mostrarTareasPendientes();
+      const idCompletada = parseInt(
+        prompt("Ingrese el ID de la tarea completada:")
+      );
+      organizadorDeTareas.marcarComoCompletada(idCompletada);
+    } else if (opcion === "4") {
+      organizadorDeTareas.mostrarTareasCompletadas();
+    } else if (opcion === "5") {
+      organizadorDeTareas.mostrarTareasPendientes();
+      const idEliminar = parseInt(
+        prompt("Ingrese el ID de la tarea a eliminar:")
+      );
+      organizadorDeTareas.eliminarTarea(idEliminar);
+    } else if (opcion === "6") {
+      alert("Gracias por utilizar el organizador de tareas. ¡Hasta luego!");
+    } else {
+      alert("Opción inválida. Por favor, seleccione una opción válida.");
+    }
+  } while (opcion !== "6");
 }
 
-// Mostrar las opciones al iniciar el programa
-
-mostrarOpciones()
+// Mostrar el mensaje de bienvenida y las opciones al iniciar el programa
+mostrarMensajeDeBienvenida();
+mostrarOpciones();
